@@ -6,14 +6,20 @@ from datetime import datetime
 import speech_recognition as sr
 import whisper
 import youtube_dl
+from dotenv import load_dotenv
 from openai import OpenAI
+from tqdm import tqdm
 
-model = whisper.load_model("base")
-result = model.transcribe("audio.mp3")
-print(result["text"])
+# model = whisper.load_model("base")
+# result = model.transcribe("audio.mp3")
+# print(result["text"])
+
+# Load environment variables from .env file
+load_dotenv()
+open_ai_api_key = os.getenv("OPEN_AI_API_KEY")
 
 
-def download_audio(url, output_dir="./downloads", filename="downloaded_audio"):
+def download_audio(url, output_dir="./videoFiles/youtube", filename="downloaded_audio"):
     # Ensure the output directory exists
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -22,25 +28,35 @@ def download_audio(url, output_dir="./downloads", filename="downloaded_audio"):
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename_with_timestamp = f"{filename}_{current_time}"
 
+    def my_hook(d):
+        if d["status"] == "downloading":
+            print("\rDownloading... {}%".format(d["_percent_str"]), end="")
+        if d["status"] == "finished":
+            print("\nDone downloading, now converting ...")
+
     ydl_opts = {
         "format": "bestaudio/best",
         "postprocessors": [
             {
                 "key": "FFmpegExtractAudio",
-                "preferredcodec": "mp3",
+                "preferredcodec": "wav",
                 "preferredquality": "192",
             }
         ],
         "outtmpl": os.path.join(output_dir, f"{filename_with_timestamp}.%(ext)s"),
+        "progress_hooks": [my_hook],
+        "verbose": True,
     }
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
 
+    return os.path.join(output_dir, f"{filename_with_timestamp}.wav")
+
 
 def transcribe_audio(file_path):
     # Load the Whisper model
-    model = whisper.load_model("base")
+    model = whisper.load_model("medium")
 
     # Transcribe the audio
     result = model.transcribe(file_path)
@@ -49,9 +65,27 @@ def transcribe_audio(file_path):
     return result["text"]
 
 
-def download_and_transcribe(url):
-    audio_file = download_audio(url)
+def save_transcription(transcription, audio_file_path, output_dir):
+    base_name = os.path.splitext(os.path.basename(audio_file_path))[0]
+    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_file_name = f"{base_name}_{current_time}.txt"
+    output_file_path = os.path.join(output_dir, output_file_name)
+
+    with open(output_file_path, "w", encoding="utf-8") as file:
+        file.write(transcription)
+
+    return output_file_path
+
+
+def download_and_transcribe(url, output_dir="./videoFiles//outputDir/"):
+    # audio_file = download_audio(url)
+    audio_file = "./videoFiles/youtube/downloaded_audio_20231203_085751.wav"
+    print("audio_file_path")
+    print(audio_file)
     transcription = transcribe_audio(audio_file)
+    output_file = save_transcription(transcription, audio_file, output_dir)
+    print("Transcription Saved Location: ")
+    print(output_file)
     return transcription
 
 
@@ -85,7 +119,7 @@ def extract_audio(input_video, output_audio):
 
 
 def get_summary(text):
-    client = OpenAI(api_key="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")
+    client = OpenAI(open_ai_api_key)
     try:
         response = client.chat.completions.create(
             messages=[
@@ -134,6 +168,7 @@ def get_video_summary(video_file):
 def main():
     parser = argparse.ArgumentParser(description="Process a video file.")
     parser.add_argument("--filename", type=str, help="Path to the video file")
+    parser.add_argument("--url", type=str, help="Youtube video URL")
     args = parser.parse_args()
 
     if args.filename:
@@ -142,6 +177,9 @@ def main():
         audio_to_text = extract_text_from_audio(output_audio_file)
         print("result")
         print(audio_to_text)
+    elif args.url:
+        print(args.url)
+        download_and_transcribe(args.url)
     else:
         print("Error: Please provide a filename using the --filename option.")
 
