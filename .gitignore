@@ -2,3 +2,4 @@ output*
 .DS_Store*
 videoFiles/*
 .env*
+__pycache__/*

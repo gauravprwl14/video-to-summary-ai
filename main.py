@@ -16,7 +16,7 @@ from tqdm import tqdm
 
 # Load environment variables from .env file
 load_dotenv()
-open_ai_api_key = os.getenv("OPEN_AI_API_KEY")
+open_ai_api_key = os.getenv("OPENAI_API_KEY")
 
 
 def download_audio(url, output_dir="./videoFiles/youtube", filename="downloaded_audio"):
@@ -173,10 +173,14 @@ def main():
 
     if args.filename:
         # get_video_summary(args.filename)
-        output_audio_file = "./output_audio.wav"
-        audio_to_text = extract_text_from_audio(output_audio_file)
+        # output_audio_file = "./output_audio.wav"
+        # audio_to_text = extract_text_from_audio(output_audio_file)
+
+        output_dir = "./videoFiles/outputDir/"
+        transcription = transcribe_audio(args.filename)
+        output_file = save_transcription(transcription, args.filename, output_dir)
         print("result")
-        print(audio_to_text)
+        print(output_file)
     elif args.url:
         print(args.url)
         download_and_transcribe(args.url)
