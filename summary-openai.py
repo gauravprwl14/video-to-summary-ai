@@ -62,9 +62,24 @@ def get_summary(file_path, open_ai_api_key):
 
     # Get an overall summary of the individual summaries
     overall_summary = get_overall_summary(individual_summaries, open_ai_api_key)
-    print("Output Summary")
-    print(overall_summary)
+    save_summary_to_file(overall_summary, file_path)
+    # print("Output Summary")
+    # print(overall_summary)
     return overall_summary
+
+
+def save_summary_to_file(
+    summary, input_file_path, output_dir="./videoFiles/summaryDir/"
+):
+    """Saves the summary to a file in the specified output directory."""
+    # Extract the base name of the input file and create the output file path
+    base_name = os.path.splitext(os.path.basename(input_file_path))[0]
+    output_file_path = os.path.join(output_dir, f"{base_name}_summary.txt")
+
+    # Write the summary to the output file
+    with open(output_file_path, "w", encoding="utf-8") as file:
+        file.write(summary)
+    return output_file_path
 
 
 # Example usage

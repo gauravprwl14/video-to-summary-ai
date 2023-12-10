@@ -77,7 +77,7 @@ def save_transcription(transcription, audio_file_path, output_dir):
     return output_file_path
 
 
-def download_and_transcribe(url, output_dir="./videoFiles//outputDir/"):
+def download_and_transcribe(url, output_dir="./videoFiles/outputDir/"):
     # audio_file = download_audio(url)
     audio_file = "./videoFiles/youtube/downloaded_audio_20231203_085751.wav"
     print("audio_file_path")
