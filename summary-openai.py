@@ -84,11 +84,11 @@ def save_summary_to_file(
 
 # Example usage
 
-open_ai_api_key = os.getenv("OPENAI_API_KEY")
-print("open_ai_api_key", open_ai_api_key)
-file_path = (
-    "./videoFiles//outputDir/downloaded_audio_20231203_085751_20231203_105701.txt"
-)
+# open_ai_api_key = os.getenv("OPENAI_API_KEY")
+# print("open_ai_api_key", open_ai_api_key)
+# file_path = (
+#     "./videoFiles/outputDir/downloaded_audio_20231203_085751_20231203_105701.txt"
+# )
 
 summary = get_summary(file_path, open_ai_api_key)
 print(summary)
