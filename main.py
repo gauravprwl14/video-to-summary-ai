@@ -34,6 +34,17 @@ def download_audio(url, output_dir="./videoFiles/youtube", filename="downloaded_
         if d["status"] == "finished":
             print("\nDone downloading, now converting ...")
 
+    # First, retrieve the video title
+    with youtube_dl.YoutubeDL({"quiet": True}) as ydl:
+        info_dict = ydl.extract_info(url, download=False)
+        video_title = info_dict.get("title", None)
+
+    # Sanitize the video title to create a valid filename
+    sanitized_title = "".join(
+        [c for c in video_title if c.isalnum() or c in [" ", "-", "_"]]
+    ).rstrip()
+    final_filename = f"{sanitized_title}_{current_time}"
+
     ydl_opts = {
         "format": "bestaudio/best",
         "postprocessors": [
@@ -43,7 +54,8 @@ def download_audio(url, output_dir="./videoFiles/youtube", filename="downloaded_
                 "preferredquality": "192",
             }
         ],
-        "outtmpl": os.path.join(output_dir, f"{filename_with_timestamp}.%(ext)s"),
+        # "outtmpl": os.path.join(output_dir, f"{filename_with_timestamp}.%(ext)s"),
+        "outtmpl": os.path.join(output_dir, f"{final_filename}.%(ext)s"),
         "progress_hooks": [my_hook],
         "verbose": True,
     }
@@ -78,8 +90,8 @@ def save_transcription(transcription, audio_file_path, output_dir):
 
 
 def download_and_transcribe(url, output_dir="./videoFiles/outputDir/"):
-    # audio_file = download_audio(url)
-    audio_file = "./videoFiles/youtube/downloaded_audio_20231203_085751.wav"
+    audio_file = download_audio(url)
+    # audio_file = "./videoFiles/youtube/downloaded_audio_20231203_085751.wav"
     print("audio_file_path")
     print(audio_file)
     transcription = transcribe_audio(audio_file)
