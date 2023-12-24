@@ -2,6 +2,7 @@ import argparse
 import os
 import subprocess
 from datetime import datetime
+import glob
 
 import speech_recognition as sr
 import whisper
@@ -40,9 +41,10 @@ def download_audio(url, output_dir="./videoFiles/youtube", filename="downloaded_
         video_title = info_dict.get("title", None)
 
     # Sanitize the video title to create a valid filename
-    sanitized_title = "".join(
-        [c for c in video_title if c.isalnum() or c in [" ", "-", "_"]]
-    ).rstrip()
+    # sanitized_title = "".join(
+    #     [c for c in video_title if c.isalnum() or c in [" ", "-", "_"]]
+    # ).rstrip()
+    sanitized_title = "".join([c if c.isalnum() or c in ["-", "_"] else "_" for c in video_title]).rstrip()
     final_filename = f"{sanitized_title}_{current_time}"
 
     ydl_opts = {
@@ -62,8 +64,15 @@ def download_audio(url, output_dir="./videoFiles/youtube", filename="downloaded_
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
+    
+    # Find the downloaded file with the correct extension
+    downloaded_files = glob.glob(os.path.join(output_dir, f"{final_filename}.*"))
+    if downloaded_files:
+        return downloaded_files[0]
+    else:
+        return "Download failed or file not found."
 
-    return os.path.join(output_dir, f"{filename_with_timestamp}.wav")
+    # return os.path.join(output_dir, f"{final_filename}.wav")
 
 
 def transcribe_audio(file_path):

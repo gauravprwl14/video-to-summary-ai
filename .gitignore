@@ -3,3 +3,4 @@ output*
 videoFiles/*
 .env*
 __pycache__/*
+poc-whisper/*
