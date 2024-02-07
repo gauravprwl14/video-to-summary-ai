@@ -206,7 +206,7 @@ def main():
         print(args.url)
         download_and_transcribe(args.url)
     else:
-        print("Error: Please provide a filename using the --filename option.")
+        print("Error: Please provide a filename using the --filename option. ")
 
 
 if __name__ == "__main__":
