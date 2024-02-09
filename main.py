@@ -198,6 +198,7 @@ def main():
         # audio_to_text = extract_text_from_audio(output_audio_file)
 
         output_dir = "./videoFiles/outputDir/"
+        print("output_dir")
         transcription = transcribe_audio(args.filename)
         output_file = save_transcription(transcription, args.filename, output_dir)
         print("result")
