@@ -199,6 +199,7 @@ def main():
 
         output_dir = "./videoFiles/outputDir/"
         print("output_dir")
+        print("added support for proper API with kafka")
         transcription = transcribe_audio(args.filename)
         output_file = save_transcription(transcription, args.filename, output_dir)
         print("result")
