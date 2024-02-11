@@ -87,6 +87,10 @@ def transcribe_audio(file_path):
 
 
 def save_transcription(transcription, audio_file_path, output_dir):
+    # Ensure the output directory exists
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    
     base_name = os.path.splitext(os.path.basename(audio_file_path))[0]
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_file_name = f"{base_name}_{current_time}.txt"
