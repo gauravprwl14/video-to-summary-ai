@@ -1,8 +1,8 @@
 import argparse
+import glob
 import os
 import subprocess
 from datetime import datetime
-import glob
 
 import speech_recognition as sr
 import whisper
@@ -44,7 +44,9 @@ def download_audio(url, output_dir="./videoFiles/youtube", filename="downloaded_
     # sanitized_title = "".join(
     #     [c for c in video_title if c.isalnum() or c in [" ", "-", "_"]]
     # ).rstrip()
-    sanitized_title = "".join([c if c.isalnum() or c in ["-", "_"] else "_" for c in video_title]).rstrip()
+    sanitized_title = "".join(
+        [c if c.isalnum() or c in ["-", "_"] else "_" for c in video_title]
+    ).rstrip()
     final_filename = f"{sanitized_title}_{current_time}"
 
     ydl_opts = {
@@ -64,7 +66,7 @@ def download_audio(url, output_dir="./videoFiles/youtube", filename="downloaded_
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
-    
+
     # Find the downloaded file with the correct extension
     downloaded_files = glob.glob(os.path.join(output_dir, f"{final_filename}.*"))
     if downloaded_files:
@@ -90,7 +92,7 @@ def save_transcription(transcription, audio_file_path, output_dir):
     # Ensure the output directory exists
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-    
+
     base_name = os.path.splitext(os.path.basename(audio_file_path))[0]
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_file_name = f"{base_name}_{current_time}.txt"
@@ -206,7 +208,7 @@ def main():
         print("added support for proper API with kafka")
         transcription = transcribe_audio(args.filename)
         output_file = save_transcription(transcription, args.filename, output_dir)
-        print("result")
+        print("result output_file")
         print(output_file)
     elif args.url:
         print(args.url)
